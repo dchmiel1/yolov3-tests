@@ -4,8 +4,8 @@ from os import listdir
 from os.path import isdir
 
 data_file = "data/obj.data"
-cfg_file = "cfg/yolov3_ndds_final.cfg"
-weights_file = "backup/yolov3_ndds_final.weights"
+cfg_file = "cfg/yolov3_test.cfg"
+weights_file = "backup/yolov3_weights.weights"
 
 tests_folder = "tests"
 
