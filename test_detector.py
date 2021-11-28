@@ -83,10 +83,10 @@ class Test:
             self.rate_predictions(real_objects, predicted_objects)
             
     def load_predictions(self, std_out):
-        _split = std_out.split("milli-seconds.\r\n")
+        _split = std_out.split("milli-seconds.\n")
         print(_split)
         detections = _split[1]
-        detections = detections.split("\\n")
+        detections = detections.split("\n")
         predicted_objects = []
         for detection in detections:
             predicted_object = ObjectData(detection.split(" "))
