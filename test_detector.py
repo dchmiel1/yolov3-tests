@@ -1,4 +1,5 @@
 import subprocess
+from typing import List
 from os import listdir
 from os.path import isdir
 
@@ -32,8 +33,8 @@ class ObjectData:
 
 class Test:
     path_to_test_files: str
-    txt_files: list[str]
-    img_files: list[str]
+    txt_files: List[str]
+    img_files: List[str]
     f1_score: float
     iou_sum: float
     avg_iou: float
