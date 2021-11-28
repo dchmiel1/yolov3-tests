@@ -78,7 +78,7 @@ class Test:
     
     def run(self):
         for img_file, real_objects in zip(self.img_files, self.real):
-            std_out = subprocess.Popen(["darknet", "detector", "test", data_file, cfg_file, weights_file, f"{self.path_to_test_files}/{img_file}"], stdout=subprocess.PIPE).communicate()[0]
+            std_out = subprocess.Popen(["./darknet", "detector", "test", data_file, cfg_file, weights_file, f"{self.path_to_test_files}/{img_file}"], stdout=subprocess.PIPE).communicate()[0]
             predicted_objects = self.load_predictions(std_out.decode("utf-8"))
             self.rate_predictions(real_objects, predicted_objects)
             
