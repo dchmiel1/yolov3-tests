@@ -1,32 +1,31 @@
 import subprocess
 from os import listdir
-import re
+from os.path import isdir
 
 data_file = "data/obj.data"
 cfg_file = "cfg/yolov3_ndds_final.cfg"
 weights_file = "backup/yolov3_ndds_final.weights"
-img_file = "final/x.jpg"
 
-easy_tests = "tests/easy_tests"
-medium_tests = "tests/medium_tests"
-hard_tests = "tests/hard_tests"
+tests_folder = "tests"
 
-tests_paths = [easy_tests, medium_tests, hard_tests]
+tests_paths = [f"{tests_folder}/{f}" for f in listdir(tests_folder) if isdir(f"{tests_folder}/{f}")]
+
+print("test paths: ", tests_paths)
 
 class ObjectData:
     id: int
-    x_center: float
-    y_center: float
-    x_width: float
-    y_width: float
+    left: int
+    top: int
+    right: int
+    bottom: int
 
     def __init__(self, params):
         try:
             self.id = int(params[0])
-            self.x_center = float(params[1])
-            self.y_center = float(params[2])
-            self.x_width = float(params[3])
-            self.y_width = float(params[4])
+            self.left = int(params[1])
+            self.top = int(params[2])
+            self.right = int(params[3])
+            self.bottom = int(params[4])
         except ValueError:
             print("Invalid object data format!")
 
@@ -78,17 +77,18 @@ class Test:
     
     def run(self):
         for img_file, real_objects in zip(self.img_files, self.real):
-            std_out = subprocess.Popen(["darknet", "detector", "test", data_file, cfg_file, weights_file, img_file], stdout=subprocess.PIPE).communicate()[0]
-            predicted_objects = self.load_predictions(std_out)
+            std_out = subprocess.Popen(["darknet", "detector", "test", data_file, cfg_file, weights_file, f"{self.path_to_test_files}/{img_file}"], stdout=subprocess.PIPE).communicate()[0]
+            predicted_objects = self.load_predictions(std_out.decode("utf-8"))
             self.rate_predictions(real_objects, predicted_objects)
             
     def load_predictions(self, std_out):
-        _split = std_out.split("milli-seconds.\\r\\n")
+        _split = std_out.split("milli-seconds.\r\n")
+        print(_split)
         detections = _split[1]
         detections = detections.split("\\n")
         predicted_objects = []
         for detection in detections:
-            predicted_object = ObjectData(detection)
+            predicted_object = ObjectData(detection.split(" "))
             predicted_objects.append(predicted_object)
         return predicted_objects
 
@@ -105,10 +105,7 @@ class Test:
 
 
 
-    def calculate_iou(self, object_a, object_b):
-        boxA = self.change_to_left_top_bottom_right(object_a)
-        boxB = self.change_to_left_top_bottom_right(object_b)
-
+    def calculate_iou(self, boxA, boxB):
         xA = max(boxA[0], boxB[0])
         yA = max(boxA[1], boxB[1])
         xB = min(boxA[2], boxB[2])
@@ -122,20 +119,19 @@ class Test:
         iou = interArea / float(boxAArea + boxBArea - interArea)
         return iou
 
-    def change_to_left_top_bottom_right(object: ObjectData):
-        box = []
-        box.append(object.x_center - object.x_width / 2.0)
-        box.append(object.y_center - object.y_width / 2.0)
-        box.append(object.x_center + object.x_width / 2.0)
-        box.append(object.y_center + object.y_width / 2.0)
-        return box
-
     def print_test_files(self):
         for img_file, _real in zip(self.img_files, self.real):
             print("Img file: ", img_file)
             for object_data in _real:
-                print(object_data.id, object_data.x_center, object_data.y_center, object_data.x_width, object_data.y_width)
+                print(object_data.id, object_data.left, object_data.top, object_data.right, object_data.bottom)
                 print()
+
+    def print_results(self):
+        print(self.path_to_test_files)
+        print("avg iou: ", self.iou_sum / self.TP)
+        print("TP: ", self.TP)
+        print("FN: ", self.FN)
+        print("FP: ", self.FP)
 
 if __name__ == "__main__":
 
@@ -149,5 +145,8 @@ if __name__ == "__main__":
     for test in tests:
         test.print_test_files()
 
-    # for test in tests:
-    #     test.run()
+    for test in tests:
+        test.run()
+    
+    for test in tests:
+        test.print_results()
