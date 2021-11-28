@@ -45,7 +45,7 @@ class Test:
     FN: int
 
     # object data
-    real: list[list[ObjectData]]
+    real: List[List[ObjectData]]
 
     def __init__(self, path_to_test_files):
         self.path_to_test_files = path_to_test_files
