@@ -86,7 +86,7 @@ class Test:
             # self.rate_predictions(real_objects, predicted_objects)
 
     def save(self, objects, img_file):
-        output_file = f"self.path_to_test_files/predicted/{img_file[0:-4]}.txt"
+        output_file = open(f"{self.path_to_test_files}/predicted/{img_file[0:-4]}.txt", "w")
         counter = 0
         to_save = ""
         for object in objects:
@@ -94,6 +94,7 @@ class Test:
                 to_save += "\n"
             to_save += f"{object.name} {object.left} {object.top} {object.right} {object.bottom}"
             counter += 1
+        output_file.write(to_save)
 
             
     def load_predictions(self, std_out):
@@ -106,8 +107,9 @@ class Test:
         for detection in detections:
             predicted_object_split = detection.split(" ")
             print(predicted_object_split)
-            predicted_object = ObjectData(predicted_object_split)
-            predicted_objects.append(predicted_object)
+            if len(predicted_object_split) > 4:
+                predicted_object = ObjectData(predicted_object_split)
+                predicted_objects.append(predicted_object)
         return predicted_objects
 
     # def rate_predictions(self, real_objects, predicted_objects):
