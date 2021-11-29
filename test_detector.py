@@ -15,6 +15,7 @@ print("test paths: ", tests_paths)
 
 class ObjectData:
     name: str
+    conf: float
     left: int
     top: int
     right: int
@@ -23,10 +24,11 @@ class ObjectData:
     def __init__(self, params):
         try:
             self.name = params[0]
-            self.left = int(params[1])
-            self.top = int(params[2])
-            self.right = int(params[3])
-            self.bottom = int(params[4])
+            self.conf = float(params[1])
+            self.left = int(params[2])
+            self.top = int(params[3])
+            self.right = int(params[4])
+            self.bottom = int(params[5])
         except ValueError:
             print("Invalid object data format!")
 
@@ -92,7 +94,7 @@ class Test:
         for object in objects:
             if counter > 0:
                 to_save += "\n"
-            to_save += f"{object.name} {object.left} {object.top} {object.right} {object.bottom}"
+            to_save += f"{object.name} {object.conf} {object.left} {object.top} {object.right} {object.bottom}"
             counter += 1
         output_file.write(to_save)
 
@@ -107,7 +109,7 @@ class Test:
         for detection in detections:
             predicted_object_split = detection.split(" ")
             print(predicted_object_split)
-            if len(predicted_object_split) > 4:
+            if len(predicted_object_split) > 5:
                 predicted_object = ObjectData(predicted_object_split)
                 predicted_objects.append(predicted_object)
         return predicted_objects
