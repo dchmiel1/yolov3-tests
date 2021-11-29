@@ -101,9 +101,12 @@ class Test:
         print(_split)
         detections = _split[1]
         detections = detections.split("\n")
+        print(detections)
         predicted_objects = []
         for detection in detections:
-            predicted_object = ObjectData(detection.split(" "))
+            predicted_object_split = detection.split(" ")
+            print(predicted_object_split)
+            predicted_object = ObjectData(predicted_object_split)
             predicted_objects.append(predicted_object)
         return predicted_objects
 
